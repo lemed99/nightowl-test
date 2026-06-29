@@ -1,0 +1,17 @@
+# Keep the local (path-repo-resolved) vendor and dev artifacts OUT of the image —
+# the Dockerfile re-resolves nightowl/agent from its GitHub VCS repo inside the build.
+/vendor/
+/node_modules/
+.env
+.env.*
+/storage/nightowl/*.sqlite
+/storage/nightowl/*.sqlite-wal
+/storage/nightowl/*.sqlite-shm
+/storage/logs/*
+/storage/framework/cache/data/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+.git
+.github
+Dockerfile
+docker-compose.yml

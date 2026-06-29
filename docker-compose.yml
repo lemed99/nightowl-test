@@ -1,0 +1,69 @@
+# NightOwl Tier-1 demo feeders — three continuous agent + simulator-loop pairs,
+# one per demo tenant DB. Deploy as a Coolify "Docker Compose" resource on the same
+# box as the API + platform Postgres.
+#
+# ── PREREQUISITES (run ONCE, in order, BEFORE these start) ───────────────────────
+#   On the nightowl-api container:
+#     php artisan nightowl:seed-demo-agency        # creates nightowl_demo_{nw_web,nw_api,delta}
+#                                                  # INSIDE the platform Postgres + the demo account
+#   Prime the 7d window (one-off per tenant, using THIS image):
+#     FEEDER_MODE=backfill  for each service  (Coolify one-off, or `docker compose run`)
+#   Then on nightowl-api:
+#     php artisan nightowl:seed-demo-agency --post-feed   # workflow issue + client report
+#   And set on nightowl-api + redeploy:
+#     NIGHTOWL_DEMO_USER_ID=<printed by seed>   NIGHTOWL_DEMO_APP_ID=<printed by seed>
+#
+# ── NETWORKING ───────────────────────────────────────────────────────────────────
+# The tenant DBs live inside the EXISTING platform Postgres, so point DEMO_PG_HOST at
+# that Postgres's Coolify-internal hostname and attach this stack to its network
+# (Coolify: "Connect to Predefined Network" → the platform Postgres's network).
+#
+# ── REQUIRED ENV (set in Coolify) ────────────────────────────────────────────────
+#   DEMO_PG_HOST   platform Postgres internal hostname
+#   DEMO_PG_PASS   platform Postgres password
+#   FEED_TOKEN     any string (frames agent<->simulator only; NOT a platform token)
+#   DEMO_PG_PORT / DEMO_PG_USER  default 5432 / nightowl
+
+x-feeder: &feeder
+  build:
+    context: .
+    dockerfile: Dockerfile
+  restart: unless-stopped
+  stop_grace_period: 30s
+
+x-feeder-env: &feeder-env
+  APP_ENV: "production"
+  APP_DEBUG: "false"
+  LOG_CHANNEL: "stderr"
+  NIGHTOWL_ENABLED: "true"
+  NIGHTOWL_SIMULATOR_ENABLED: "true"
+  NIGHTOWL_HEALTH_REPORT_ENABLED: "false"   # keep the curated varied health intact
+  NIGHTOWL_ENVIRONMENT: "production"
+  NIGHTOWL_AGENT_HOST: "127.0.0.1"
+  NIGHTOWL_AGENT_PORT: "2407"
+  NIGHTOWL_TOKEN: "${FEED_TOKEN:-demo-feed-token}"
+  NIGHTOWL_DB_HOST: "${DEMO_PG_HOST:?set DEMO_PG_HOST to the platform Postgres host}"
+  NIGHTOWL_DB_PORT: "${DEMO_PG_PORT:-5432}"
+  NIGHTOWL_DB_USERNAME: "${DEMO_PG_USER:-nightowl}"
+  NIGHTOWL_DB_PASSWORD: "${DEMO_PG_PASS:?set DEMO_PG_PASS to the platform Postgres password}"
+  NIGHTWATCH_REDACT_HEADERS: "authorization,cookie,x-api-key"
+  NIGHTWATCH_REDACT_PAYLOAD_FIELDS: "password,token,secret"
+
+services:
+  feeder-nw-web:
+    <<: *feeder
+    environment:
+      <<: *feeder-env
+      NIGHTOWL_DB_DATABASE: "nightowl_demo_nw_web"
+
+  feeder-nw-api:
+    <<: *feeder
+    environment:
+      <<: *feeder-env
+      NIGHTOWL_DB_DATABASE: "nightowl_demo_nw_api"
+
+  feeder-delta:
+    <<: *feeder
+    environment:
+      <<: *feeder-env
+      NIGHTOWL_DB_DATABASE: "nightowl_demo_delta"
