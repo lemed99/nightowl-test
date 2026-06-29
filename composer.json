@@ -88,13 +88,14 @@
     "prefer-stable": true,
     "repositories": [
         {
-            "type": "path",
-            "url": "../nightowl-agent",
-            "options": { "symlink": true }
+            "type": "vcs",
+            "url": "https://github.com/lemed99/nightowl-agent",
+            "no-api": true
         },
         {
             "type": "vcs",
-            "url": "https://github.com/lemed99/nightowl-agent-simulator"
+            "url": "https://github.com/lemed99/nightowl-agent-simulator",
+            "no-api": true
         }
     ]
 }

@@ -18,14 +18,12 @@ RUN echo "memory_limit=256M" > "$PHP_INI_DIR/conf.d/zz-feeder.ini"
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /app
 
-# nightowl/agent is required via a PATH repo (../nightowl-agent) that does NOT exist
-# in this build context. Point it at the published GitHub VCS repo and re-resolve
-# the two NightOwl packages from VCS (the now-missing path repo is inert, so it can't
-# shadow the VCS one). Both are in `require`, so --no-dev keeps them.
+# nightowl/agent + nightowl/agent-simulator come from their public GitHub repos,
+# declared as `no-api` VCS repositories in composer.json so composer clones over git
+# instead of hitting the rate-limited/authenticated GitHub API. The lock is already
+# resolved against those repos, so a plain install suffices. Both are in `require`.
 COPY composer.json composer.lock ./
-RUN composer config repositories.nightowl-agent vcs https://github.com/lemed99/nightowl-agent \
-    && composer update nightowl/agent nightowl/agent-simulator \
-       --no-dev --no-interaction --no-scripts --optimize-autoloader --with-all-dependencies
+RUN composer install --no-dev --no-interaction --no-scripts --optimize-autoloader
 
 # App source (vendor/ is .dockerignore'd, so this does not clobber the install above).
 COPY . .
