@@ -56,15 +56,18 @@ services:
     environment:
       <<: *feeder-env
       NIGHTOWL_DB_DATABASE: "nightowl_demo_nw_web"
+      NIGHTOWL_SIMULATOR_ERROR_RATE: "0.5"    # healthy primary app — occasional errors
 
   feeder-nw-api:
     <<: *feeder
     environment:
       <<: *feeder-env
       NIGHTOWL_DB_DATABASE: "nightowl_demo_nw_api"
+      NIGHTOWL_SIMULATOR_ERROR_RATE: "2.0"    # degraded app — elevated errors
 
   feeder-delta:
     <<: *feeder
     environment:
       <<: *feeder-env
       NIGHTOWL_DB_DATABASE: "nightowl_demo_delta"
+      NIGHTOWL_SIMULATOR_ERROR_RATE: "4.5"    # on-fire app — showcases issues/exceptions

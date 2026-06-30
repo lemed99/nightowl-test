@@ -2598,16 +2598,16 @@
         },
         {
             "name": "nightowl/agent-simulator",
-            "version": "v0.1.2",
+            "version": "v0.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lemed99/nightowl-agent-simulator",
-                "reference": "ede42e035a39a850d1e1582a6463780e7f94e305"
+                "reference": "cec5683e29902431b3788857aa379eae45ff7240"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lemed99/nightowl-agent-simulator/zipball/ede42e035a39a850d1e1582a6463780e7f94e305",
-                "reference": "ede42e035a39a850d1e1582a6463780e7f94e305",
+                "url": "https://api.github.com/repos/lemed99/nightowl-agent-simulator/zipball/cec5683e29902431b3788857aa379eae45ff7240",
+                "reference": "cec5683e29902431b3788857aa379eae45ff7240",
                 "shasum": ""
             },
             "require": {
@@ -2639,7 +2639,7 @@
                 "telemetry",
                 "testing"
             ],
-            "time": "2026-06-30T09:29:47+00:00"
+            "time": "2026-06-30T09:58:11+00:00"
         },
         {
             "name": "nikic/php-parser",
