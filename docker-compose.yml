@@ -37,7 +37,7 @@ x-feeder-env: &feeder-env
   LOG_CHANNEL: "stderr"
   NIGHTOWL_ENABLED: "true"
   NIGHTOWL_SIMULATOR_ENABLED: "true"
-  NIGHTOWL_SIMULATOR_DELAY_MS: "${SIMULATOR_DELAY_MS:-3600}"   # avg ms/tick → ~5-9K req/6h daytime (env-tunable: raise = less traffic, lower = more)
+  NIGHTOWL_SIMULATOR_DELAY_MS: "${SIMULATOR_DELAY_MS:-12000}"  # avg ms/tick → ~7K req/day (env-tunable: raise = less traffic, lower = more)
   NIGHTOWL_HEALTH_REPORT_ENABLED: "false"   # keep the curated varied health intact
   NIGHTOWL_ENVIRONMENT: "production"
   NIGHTOWL_AGENT_HOST: "127.0.0.1"

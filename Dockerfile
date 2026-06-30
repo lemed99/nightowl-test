@@ -37,4 +37,10 @@ COPY docker/supervisord.conf /etc/supervisor/feeder.conf
 COPY docker/feeder-entrypoint.sh /usr/local/bin/feeder-entrypoint.sh
 RUN chmod +x /usr/local/bin/feeder-entrypoint.sh
 
+# Real health = the agent's TCP ingest port is listening. (The frankenphp base image
+# ships a HEALTHCHECK that curls port 2019, which these feeders never start since the
+# entrypoint runs supervisord, not the FrankenPHP server — hence a false "unhealthy".)
+HEALTHCHECK --interval=30s --timeout=5s --start-period=25s --retries=3 \
+  CMD php -r 'exit(@fsockopen("127.0.0.1",2407,$e,$s,2)?0:1);'
+
 ENTRYPOINT ["/usr/local/bin/feeder-entrypoint.sh"]
